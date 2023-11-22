@@ -34,7 +34,7 @@ export class ChatGPTApi implements LLMApi {
     const accessStore = useAccessStore.getState();
 
     const isAzure = accessStore.provider === ServiceProvider.Azure;
-
+    
     if (isAzure && !accessStore.isValidAzure()) {
       throw Error(
         "incomplete azure config, please check it in your settings page",
@@ -59,6 +59,10 @@ export class ChatGPTApi implements LLMApi {
       path = makeAzurePath(path, accessStore.azureApiVersion);
     }
 
+    const isCloudflareGateway = baseUrl.includes('cloudflare')
+    if (isCloudflareGateway) {
+      path = path.replace('v1', '');
+    }
     return [baseUrl, path].join("/");
   }
 
